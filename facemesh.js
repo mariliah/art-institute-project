@@ -32,7 +32,7 @@ function drawKeypoints() {
         for (let j = 0; j < keypoints.length; j += 1) {
             const [x, y] = keypoints[j];
 
-            fill(125, 125, 6);
+            fill(220, 20, 60);
             ellipse(x, y, 5, 5);
         }
     }
