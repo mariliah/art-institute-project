@@ -2,6 +2,7 @@
 let model;
 let targetLabel = 'C';
 // let trainingData = [] this isn't needed because there is a function called addData that we can work with to save the data
+let state = 'collection';
 
 function setup() {
     createCanvas(400, 400);
@@ -10,8 +11,8 @@ function setup() {
         inputs: ['x', 'y'],
         outputs: ['label'],
         task: 'classification',
-        debug: 'true'
-    }
+        debug: 'true',
+    };
 
     model = ml5.neuralNetwork(options);
     background(255);
@@ -20,10 +21,11 @@ function keyPressed() {
 
     console.log('started training')
     if (key === 't') {
+        state = 'training';
         model.normalizeData();
         let options = {
             epochs: 200
-        }
+        };
         model.train(options, whileTraining, finishedTraining);
     } else {
         targetLabel = key.toUpperCase()
@@ -37,25 +39,41 @@ function whileTraining(epoch, loss) {
 
 function finishedTraining() {
     console.log('finished training');
+    state = 'prediction';
 }
 function mousePressed() {
     let inputs = {
         x: mouseX,
         y: mouseY
     };
-
-    let target = {
-        label: targetLabel
+    if (state === 'collection') {
+        let target = {
+            label: targetLabel
+        };
+        model.addData(inputs, target);
+        stroke(0);
+        noFill();
+        ellipse(mouseX, mouseY, 24);
+        fill(0);
+        noStroke();
+        textAlign(CENTER, CENTER);
+        text(targetLabel, mouseX, mouseY);
+    } else if (state === 'prediction') {
+        model.classify(inputs);
     }
+}
 
-    model.addData(inputs, target);
-
-
+function gotResults(error, results) {
+    if (error) {
+        console.error(error);
+        return;
+    }
+    console.log(results);
     stroke(0);
-    noFill();
+    fill(0, 0, 255, 100);
     ellipse(mouseX, mouseY, 24);
     fill(0);
     noStroke();
     textAlign(CENTER, CENTER);
-    text(targetLabel, mouseX, mouseY);
+    text(results[0].label, mouseX, mouseY);
 }
