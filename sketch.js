@@ -1,44 +1,54 @@
-let handpose;
 let video;
-let hands = [];
+let poseNet;
+let pose;
+let skeleton
 
 function setup() {
     createCanvas(640, 480);
     video = createCapture(VIDEO);
-    video.size(width, height);
-    handpose = ml5.handpose(video, modelReady);
-
-    console.log("HANDPOSE: ", handpose);
-    // listen to new hand events
-    handpose.on('hand', results => {
-        hands = results;
-    })
-
-    // hide the video element, and just show the canvas
     video.hide();
+    poseNet = ml5.poseNet(video, modelLoaded);
+    poseNet.on('pose', gotPoses);
 }
 
-//when the model is loaded
-function modelReady() {
-    console.log('model is loaded');
+function gotPoses(poses) {
+    // console.log(poses);
+    if (poses.length > 0) {
+        pose = poses[0].pose;
+        skeleton = poses[0].skeleton
+    }
 }
 
+function modelLoaded() {
+    console.log('poseNet ready');
+}
 
 function draw() {
-    image(video, 0, 0, width, height);
+    image(video, 0, 0);
 
-    // call both functions to draw all keypoints and skeletons
-    drawKeypoints();
-}
+    if (pose) {
+        let eyeR = pose.rightEye;
+        let eyeL = pose.leftEye;
 
-function drawKeypoints() {
-    for (let i = 0; i < hands.length; i += 1) {
-        const hand = hands[i];
-        for (let j = 0; j < hands.landmarks.length; j += 1) {
-            const keypoint = hand.landmarks[j];
+        let d = dist(eyeR.x, eyeR.y, eyeL.x, eyeL.y);
+        fill(255, 0, 0);
+        ellipse(pose.nose.x, pose.nose.y, d);
+        ellipse(pose.rightWrist.x, pose.rightWrist.y, 50);
+        ellipse(pose.leftWrist.x, pose.leftWrist.y, 50);
+
+        for (let i = 0; i < pose.keypoints.length; i++) {
+            let x = pose.keypoint[i].position.x;
+            let y = pose.keypoint[y].position.y;
             fill(0, 255, 0);
-            noStroke();
-            ellipse(keypoint[0], keypoint[1], 10, 10);
+            ellipse(x, y, 16, 16);
+        }
+
+        for (let i = 0; i < skeleton.length; i++) {
+            let a = skeleton[i][0];
+            let b = skeleton[i][0];
+            strokeWeight(2);
+            stroke(255);
+            line(a.position.x, a.position.y, b.position.x, b.position.y);
         }
     }
 }
