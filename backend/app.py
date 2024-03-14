@@ -20,7 +20,7 @@ def get_artwork():
         return jsonify({"message": "An error occurred while processing your request"}), 500
 
 # gets a specific artwork
-@app.route(/'artwork/<int:id>', methods=['GET'])
+@app.route('/artwork/<int:id>', methods=['GET'])
 def get_artwork_by_id(id):
     try:
         response = requests.get(f"{MUSEUM_URL}/{id}")
