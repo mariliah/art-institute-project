@@ -4,13 +4,15 @@ let targetLabel = 'C';
 // let trainingData = [] this isn't needed because there is a function called addData that we can work with to save the data
 let state = 'collection';
 
+// predict() function name for a regression
+
 function setup() {
     createCanvas(400, 400);
 
     let options = {
         inputs: ['x', 'y'],
         outputs: ['label'],
-        task: 'classification',
+        task: 'classification', // change this to regression
         debug: 'true',
         learningRate: 0.5
     };
