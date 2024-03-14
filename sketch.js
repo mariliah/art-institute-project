@@ -1,6 +1,6 @@
 // from ml5 js website
 
-let classifier;
+const classifier = ml5.iamgeClassifier('MobileNet', modelLoaded);
 let img;
 
 function preload() {
@@ -14,6 +14,9 @@ function setup() {
     image(img, 0, 0);
 }
 
+function modelLoaded() {
+    console.log('model loaded');
+}
 function gotResult(error, results) {
     if (error) {
         console.error(error);
